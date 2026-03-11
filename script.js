@@ -1,86 +1,87 @@
-body{
-  background:#0b0b0b;
-  font-family:Arial;
-  overflow:hidden;
+// Tabs
+const tabs = document.querySelectorAll(".tab")
+const contents = document.querySelectorAll(".tabContent")
+
+tabs.forEach(tab=>{
+  tab.onclick=()=>{
+    tabs.forEach(t=>t.classList.remove("active"))
+    contents.forEach(c=>c.classList.remove("active"))
+
+    tab.classList.add("active")
+    document.getElementById(tab.dataset.tab).classList.add("active")
+  }
+})
+
+// Drag window
+const menu = document.getElementById("menu")
+const header = document.getElementById("header")
+
+let drag=false, offsetX, offsetY
+
+header.onmousedown=e=>{
+  drag=true
+  offsetX=e.clientX-menu.offsetLeft
+  offsetY=e.clientY-menu.offsetTop
 }
 
-#menu{
-  position:absolute;
-  top:120px;
-  left:120px;
-  width:420px;
-  height:280px;
-  background:#121212;
-  border:1px solid #2c2c2c;
-  border-radius:8px;
-  color:white;
-  transition:width .15s,height .15s;
+document.onmouseup=()=>drag=false
+
+document.onmousemove=e=>{
+  if(!drag) return
+  menu.style.left=e.clientX-offsetX+"px"
+  menu.style.top=e.clientY-offsetY+"px"
+  saveState()
 }
 
-#header{
-  padding:10px;
-  background:#1a1a1a;
-  cursor:move;
-  font-weight:bold;
+// Resize window
+const handle=document.querySelector(".resize-handle")
+let resizing=false, startX, startY, startW, startH
+
+const MIN_W=320, MIN_H=220, MAX_W=900, MAX_H=700
+
+handle.onmousedown=e=>{
+  resizing=true
+  startX=e.clientX
+  startY=e.clientY
+  startW=menu.offsetWidth
+  startH=menu.offsetHeight
 }
 
-#container{
-  display:flex;
-  height:calc(100% - 40px);
+document.addEventListener("mousemove",e=>{
+  if(!resizing) return
+
+  let newW=startW+(e.clientX-startX)
+  let newH=startH+(e.clientY-startY)
+
+  newW=Math.max(MIN_W, Math.min(MAX_W,newW))
+  newH=Math.max(MIN_H, Math.min(MAX_H,newH))
+
+  menu.style.width=newW+"px"
+  menu.style.height=newH+"px"
+
+  saveState()
+})
+
+document.addEventListener("mouseup",()=>resizing=false)
+
+// Save window state
+function saveState(){
+  const state={
+    x:menu.style.left,
+    y:menu.style.top,
+    w:menu.style.width,
+    h:menu.style.height
+  }
+  localStorage.setItem("uiState",JSON.stringify(state))
 }
 
-#tabs{
-  width:120px;
-  border-right:1px solid #2c2c2c;
+function loadState(){
+  const state=JSON.parse(localStorage.getItem("uiState"))
+  if(!state) return
+  menu.style.left=state.x
+  menu.style.top=state.y
+  menu.style.width=state.w
+  menu.style.height=state.h
 }
 
-.tab{
-  width:100%;
-  padding:10px;
-  border:none;
-  background:none;
-  color:white;
-  cursor:pointer;
-}
-
-.tab.active{
-  background:#262626;
-}
-
-#content{
-  flex:1;
-  padding:12px;
-  overflow:auto;
-}
-
-.toggle{
-  display:flex;
-  justify-content:space-between;
-  margin-bottom:14px;
-}
-
-.sliderBox{
-  margin-top:10px;
-}
-
-/* glowing resize corner */
-.resize-handle{
-  position:absolute;
-  bottom:0;
-  right:0;
-  width:18px;
-  height:18px;
-  cursor:nwse-resize;
-}
-
-.resize-handle::after{
-  content:"";
-  position:absolute;
-  bottom:3px;
-  right:3px;
-  width:10px;
-  height:10px;
-  border-right:2px solid #00e5ff;
-  border-bottom:2px solid #00e5ff;
-  filter:drop-shadow(0 0 4px #00e5ff);
-}
+loadState()
