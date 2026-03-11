@@ -1,1 +1,59 @@
-ui-framework/index.html
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Modular UI Framework</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="menu">
+
+  <div id="header">Custom UI Panel</div>
+
+  <div id="container">
+
+    <div id="tabs">
+      <button class="tab active" data-tab="player">Player</button>
+      <button class="tab" data-tab="visuals">Visuals</button>
+      <button class="tab" data-tab="misc">Misc</button>
+    </div>
+
+    <div id="content">
+
+      <div class="tabContent active" id="player">
+        <label class="toggle">
+          God Mode
+          <input type="checkbox">
+          <span class="switch"></span>
+        </label>
+
+        <div class="sliderBox">
+          Speed
+          <input type="range" min="1" max="10" value="5">
+        </div>
+      </div>
+
+      <div class="tabContent" id="visuals">
+        <label class="toggle">
+          ESP
+          <input type="checkbox">
+          <span class="switch"></span>
+        </label>
+      </div>
+
+      <div class="tabContent" id="misc">
+        <p>Misc tools</p>
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="resize-handle"></div>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
